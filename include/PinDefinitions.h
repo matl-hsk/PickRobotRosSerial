@@ -1,5 +1,8 @@
 /// Define the pins on the board
 
+#ifndef PINDEFINITIONS_H
+#define PINDEFINITIONS_H
+
 /// motor pins
 #define STEPX 46
 #define DIRX 48
@@ -13,3 +16,5 @@
 
 /// vacuum gripper pin
 #define PIN_VAC 9
+
+#endif

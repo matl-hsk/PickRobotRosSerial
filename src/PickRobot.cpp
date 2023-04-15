@@ -1,4 +1,4 @@
-/// Portal robot with vacuum gripper
+/// Source file for PickRobot class
 
 #include "PickRobot.h"
 
@@ -53,14 +53,23 @@ void PickRobot::setup()
 void PickRobot::set(Command const &cmd)
 {
   float velStepsPerS[3];
-  convertMeterPerSecToStepsPerSec(cmd.axisVel, velStepsPerS);
+  convertMeterPerSecToStepsPerSec(cmd.axisVels, velStepsPerS);
   xStepper.setSpeed(velStepsPerS[x]);
   yStepper.setSpeed(velStepsPerS[y]);
   zStepper.setSpeed(velStepsPerS[z]);
   digitalWrite(PIN_VAC, cmd.activateGripper);
 }
 
-void PickRobot::run()
+
+void PickRobot::printCommand(Command const &cmd, Stream& stream)
+{
+  stream.print(cmd.axisVels[0],10); stream.print(" ");
+  stream.print(cmd.axisVels[1],10); stream.print(" ");
+  stream.println(cmd.axisVels[2],10);
+  stream.println(cmd.activateGripper);
+}
+
+void PickRobot::update()
 {
   xStepper.runSpeed();
   yStepper.runSpeed();

@@ -25,7 +25,7 @@ public:
   {
     x = 0,
     y = 1,
-    z = 3
+    z = 2
   };
 
 public:

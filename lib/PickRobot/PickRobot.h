@@ -52,6 +52,10 @@ public:
   static void printCommand(Command const &cmd, Stream &stream);
 
 private:
+  /// @brief Checks if a limit has been hit and disables the movement on that
+  /// axis if it has been hit.
+  void checkLimits();
+
   /// @brief Stepper motor for x-axis
   AccelStepper xStepper;
   /// @brief Stepper motor for y-axis

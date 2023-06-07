@@ -18,15 +18,15 @@ namespace
   }
 
   /// @brief Convert the specified velocity from m/s to steps/s
-  /// @param[in] velMetersPerS Velocity in m/s. Must be an array of length 3, no error checking is done
-  /// @param[out] velStepsPerS Velocity in steps/s. Must be an array of length 3, no error checking is done
-  void convertMeterPerSecToStepsPerSec(float const *const velMeterPerS, float *velStepsPerS)
+  /// @param[in] velMetersPerS Velocity in m/s. Must be an array of length 3,
+  /// no error checking is done
+  /// @param[out] velStepsPerS Velocity in steps/s. Must be an array of length 3,
+  /// no error checking is done
+  void convertMeterPerSecToStepsPerSec(float const *const velMeterPerS,
+                                       float *velStepsPerS)
   {
-    // float const stepsPerRev = 200.F;
-    // float const gearRatio = 2.6F;
-    // float const revPerMeter = 1000.F/6.35F;
-    // float const stepsPerMeter = revPerMeter * gearRatio * stepsPerRev;
-    float const stepsPerMeter = 324577.F; // 321436.F // gemessen
+    float const stepsPerMeter = 154174.F; // gemessen mit alter Übersetzung und
+                                          // Umrechnung nach Wechsel der Übersetzung
     for (int i = 0; i < 3; ++i)
     {
       velStepsPerS[i] = velMeterPerS[i] * stepsPerMeter;

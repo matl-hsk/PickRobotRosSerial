@@ -71,12 +71,14 @@ void PickRobot::setup()
 
 void PickRobot::set(Command const &cmd)
 {
-  float velStepsPerS[3];
-  convertMeterPerSecToStepsPerSec(cmd.axisVels, velStepsPerS);
+  convertMeterPerSecToStepsPerSec(cmd.axisVels, desiredSpeeds);
+  desiredSpeeds[x] = min(desiredSpeeds[x], xStepper.maxSpeed());
+  desiredSpeeds[y] = min(desiredSpeeds[y], yStepper.maxSpeed());
+  desiredSpeeds[z] = min(desiredSpeeds[z], zStepper.maxSpeed());
+  desiredSpeeds[x] = max(desiredSpeeds[x], -xStepper.maxSpeed());
+  desiredSpeeds[y] = max(desiredSpeeds[y], -yStepper.maxSpeed());
+  desiredSpeeds[z] = max(desiredSpeeds[z], -zStepper.maxSpeed());
 
-  xStepper.setSpeed(velStepsPerS[x]);
-  yStepper.setSpeed(velStepsPerS[y]);
-  zStepper.setSpeed(velStepsPerS[z]);
   digitalWrite(PIN_VAC, cmd.activateGripper);
 }
 
@@ -89,7 +91,7 @@ void PickRobot::printCommand(Command const &cmd, Stream& stream)
   stream.println(cmd.activateGripper);
 }
 
-void PickRobot::checkLimits()
+void PickRobot::enforceLimits()
 {
   limitSpeedIfAtEnd(xStepper, PIN_MAX_ENDSTOP_X, true);
   limitSpeedIfAtEnd(yStepper, PIN_MAX_ENDSTOP_Y, true);
@@ -100,9 +102,52 @@ void PickRobot::checkLimits()
   limitSpeedIfAtEnd(zStepper, PIN_MIN_ENDSTOP_Z, false);
 }
 
+void PickRobot::calcAndSetMotorSpeeds()
+{
+  //{
+  //  float curSpeed = xStepper.speed();
+  //  float deltaSpeed = desiredSpeeds[x] - curSpeed;
+  //  xStepper.setSpeed(curSpeed + 0.001 * deltaSpeed);
+  //}
+  //{
+  //  float curSpeed = yStepper.speed();
+  //  float deltaSpeed = desiredSpeeds[y] - curSpeed;
+  //  yStepper.setSpeed(curSpeed + 0.001 * deltaSpeed);
+  //}
+  //{
+  //  float curSpeed = zStepper.speed();
+  //  float deltaSpeed = desiredSpeeds[z] - curSpeed;
+  //  zStepper.setSpeed(curSpeed + 0.001 * deltaSpeed);
+  //}
+
+
+  AccelStepper* stepper[3] = {&xStepper, &yStepper, &zStepper};
+  float const speedIncr = 5.F;
+  for (int i = 0; i < 3; ++i)
+  {
+    float setSpeed;
+    float const curSpeed = stepper[i]->speed();
+    float const deltaSpeed = desiredSpeeds[i] - curSpeed;
+    if (deltaSpeed > speedIncr)
+    {
+      setSpeed = curSpeed + speedIncr;
+    }
+    else if (deltaSpeed < -speedIncr)
+    {
+      setSpeed = curSpeed - speedIncr;
+    }
+    else
+    {
+      setSpeed = desiredSpeeds[i];
+    }
+    stepper[i]->setSpeed(setSpeed);
+  }
+}
+
 void PickRobot::update()
 {
-  checkLimits();
+  calcAndSetMotorSpeeds();
+  enforceLimits();
   xStepper.runSpeed();
   yStepper.runSpeed();
   zStepper.runSpeed();

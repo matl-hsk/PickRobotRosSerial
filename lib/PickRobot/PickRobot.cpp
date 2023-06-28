@@ -40,9 +40,14 @@ namespace
   /// of the axis, false otherwise.
   void limitSpeedIfAtEnd(AccelStepper& stepper, uint8_t endPin, bool isUpperLimit)
   {
-    if((digitalRead(endPin) == LOW) && ((stepper.speed() > 0.F) == isUpperLimit))
+    float const speed = stepper.speed();
+    if((digitalRead(endPin) == LOW) && (speed > 0.F) == isUpperLimit)
     {
-      stepper.setSpeed(0.F);
+        stepper.setSpeed(0.99F*speed);
+        if (abs(stepper.speed()) < 1000)
+        {
+          stepper.setSpeed(0.F);
+        }
     }
   }
 }
@@ -104,23 +109,6 @@ void PickRobot::enforceLimits()
 
 void PickRobot::calcAndSetMotorSpeeds()
 {
-  //{
-  //  float curSpeed = xStepper.speed();
-  //  float deltaSpeed = desiredSpeeds[x] - curSpeed;
-  //  xStepper.setSpeed(curSpeed + 0.001 * deltaSpeed);
-  //}
-  //{
-  //  float curSpeed = yStepper.speed();
-  //  float deltaSpeed = desiredSpeeds[y] - curSpeed;
-  //  yStepper.setSpeed(curSpeed + 0.001 * deltaSpeed);
-  //}
-  //{
-  //  float curSpeed = zStepper.speed();
-  //  float deltaSpeed = desiredSpeeds[z] - curSpeed;
-  //  zStepper.setSpeed(curSpeed + 0.001 * deltaSpeed);
-  //}
-
-
   AccelStepper* stepper[3] = {&xStepper, &yStepper, &zStepper};
   float const speedIncr = 5.F;
   for (int i = 0; i < 3; ++i)

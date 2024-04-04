@@ -54,7 +54,11 @@ public:
 private:
   /// @brief Checks if a limit has been hit and disables the movement on that
   /// axis if it has been hit.
-  void checkLimits();
+  void enforceLimits();
+
+  /// @brief Calculate motor set speeds
+  /// Slowly ramp up/down from current speed to desired speed
+  void calcAndSetMotorSpeeds();
 
   /// @brief Stepper motor for x-axis
   AccelStepper xStepper;
@@ -62,6 +66,9 @@ private:
   AccelStepper yStepper;
   /// @brief Stepper motor for z-axis
   AccelStepper zStepper;
+
+  /// @brief  Desired speeds for each axis in steps/s
+  float desiredSpeeds[3];
 };
 
 #endif

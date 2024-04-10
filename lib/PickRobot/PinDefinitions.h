@@ -17,7 +17,7 @@
 #define ENABLEZ 38
     
 /// endstop pins
-#define PIN_MIN_ENDSTOP_X 18    
+#define PIN_MIN_ENDSTOP_X 18
 #define PIN_MAX_ENDSTOP_X 19
 
 #define PIN_MIN_ENDSTOP_Y 14

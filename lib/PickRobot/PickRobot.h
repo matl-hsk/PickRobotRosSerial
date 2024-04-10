@@ -9,14 +9,14 @@
 
 /// @brief Portal robot with stepper motors on each axis and vacuum gripper
 ///
-/// No feedback of the position, only speed and gripper on/off commands.
+/// No feedback of the position, only accel and gripper on/off commands.
 class PickRobot
 {
 public:
-  /// @brief Struct to save a robot command, contains axis velocity and gripper activation
+  /// @brief Struct to save a robot command, contains axis accel and gripper activation
   struct Command
   {
-    float axisVels[3];
+    float axisAccels[3];
     bool activateGripper;
   };
 
@@ -39,11 +39,10 @@ public:
   /// This must be called regularly in the main loop.
   void update();
 
-
   /// @brief Set the specified command.
-  /// @param cmd Velocities in m/s with which the axes shall move and bool
+  /// @param cmd Accelerations in m/s^2 with which the axes shall move and bool
   /// indicating if the vacuum gripper shall be activated.
-  /// Absolute value of the commanded velocity per axis will be limited to **todo** m/s.
+  /// If the maximum speed is reached, the acceleration will be limited to 0.
   void set(Command const &cmd);
 
   /// @brief Print the specified command to the specified stream
@@ -54,11 +53,10 @@ public:
 private:
   /// @brief Checks if a limit has been hit and disables the movement on that
   /// axis if it has been hit.
-  void enforceLimits();
+  void enforceAxisLimits();
 
-  /// @brief Calculate motor set speeds
-  /// Slowly ramp up/down from current speed to desired speed
-  void calcAndSetMotorSpeeds();
+  /// @brief Set motor accelerations to desired values
+  void setMotorAccels();
 
   /// @brief Stepper motor for x-axis
   AccelStepper xStepper;
@@ -68,7 +66,7 @@ private:
   AccelStepper zStepper;
 
   /// @brief  Desired speeds for each axis in steps/s
-  float desiredSpeeds[3];
+  float desiredAccels[3];
 };
 
 #endif

@@ -66,9 +66,9 @@ int deserializeROSRobotCmdMessage(uint8_t const* const buffer, size_t const size
   memcpy(ucdrDataBuffer, buffer + sizeof(ros2::COBSHeader), payload_len);
 
   ucdr_init_buffer(&reader, ucdrDataBuffer, payload_len);
-  ucdr_deserialize_array_float(&reader, cmd.axisVels, 3);
+  ucdr_deserialize_array_float(&reader, cmd.axisAccels, 3);
 
-  ucdr_init_buffer(&reader, ucdrDataBuffer + sizeof(PickRobot::Command::axisVels), 1);
+  ucdr_init_buffer(&reader, ucdrDataBuffer + sizeof(PickRobot::Command::axisAccels), 1);
   ucdr_deserialize_bool(&reader, &cmd.activateGripper);
   return 1;
 }
